@@ -1,0 +1,29 @@
+@media (width >= 1550px) {
+    #Main{
+        width: 330px;
+    }
+    #logo-no-text{
+        width: 124px;
+    }
+    #avatar{
+        padding-right: 54px;
+        padding-left: 54px;
+    }
+}
+@media (width >= 1960px) {
+    #Main{
+        width: 380px;
+    }
+}
+
+@media (width <= 820px) and (width >= 640px) {
+    #tabSearch{
+        display: block;
+    }
+}
+
+@media (width <= 1640px ) and (width >= 1280px) {
+    #edit{
+        padding-left: 76px;
+    }
+}
