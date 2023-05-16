@@ -27,3 +27,7 @@
         padding-left: 76px;
     }
 }
+
+#range{
+    --progress-color: #00c853;
+}

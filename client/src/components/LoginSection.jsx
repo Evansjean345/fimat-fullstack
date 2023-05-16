@@ -1,17 +1,16 @@
 import React, { useState, useContext } from "react";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../services/account.service";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginSection() {
   const { login, isAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,10 +23,13 @@ export default function LoginSection() {
       const userId = response.data.userId;
       Cookies.set("jwt", token, { expires: 3 });
       login({ userId, token });
-      isAuthenticated()
     } catch (error) {
       console.log(error);
     }
+    if (isAuthenticated()) {
+      navigate('/')
+    }
+   
   };
 
   const handleChange = (e) => {

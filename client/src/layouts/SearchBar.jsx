@@ -6,9 +6,12 @@ export default function SearchBar() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/order")
-      .then((res) => res.json())
-      .then((res) => setData(res));
+    const fetchOrder = () => {
+      fetch("http://localhost:4000/order")
+        .then((res) => res.json())
+        .then((res) => setData(res));
+    };
+    fetchOrder();
   }, []);
 
   console.log("data", data);
@@ -62,18 +65,14 @@ export default function SearchBar() {
       <div className="dropdown flex flex-col p-2 empty:border-none border border-solid border-gray-500 w-full overflow-y-scroll h-[120px] empty:h-[0px] empty:overflow-hidden rounded-lg">
         {data
           .filter((item) => {
-            const searchTerm = value.toLowerCase();
-            const tracking = item.tracking.toLowerCase();
-            return (
-              searchTerm &&
-              tracking.startsWith(searchTerm) &&
-              tracking !== searchTerm
-            );
+            const searchTerm = value;
+            const tracking = item.tracking;
+            return searchTerm && tracking !== searchTerm;
           })
           .slice(0, 10)
           .map((item) => (
             <Link
-              to={`/order/${item._id}`}
+              to={`/dashboard/admin/order/details/${item._id}`}
               className="hover:bg-gray-300 rounded-lg w-full"
             >
               <div

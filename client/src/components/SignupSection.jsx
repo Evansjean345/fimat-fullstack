@@ -1,13 +1,25 @@
 import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Formik, Field } from "formik";
 import * as Yup from "yup";
-import Test from "./Test";
-
-
+import { PhotoIcon } from "@heroicons/react/24/solid";
+import {
+  Input,
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+} from "@material-tailwind/react";
 
 export default function SignupSection() {
+  //gestion
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
+
+  //
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
   const [username, setUsername] = useState("");
@@ -15,7 +27,8 @@ export default function SignupSection() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [imgUrl, setImgUrl] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
+  const [profile, setProfile] = useState("");
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Le nom est obligatoire"),
@@ -34,6 +47,16 @@ export default function SignupSection() {
   const onChangeFile = (e) => {
     setImgUrl(e.target.files[0]);
   };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const url = URL.createObjectURL(file);
+    setImgUrl(file);
+    setProfile(url);
+  };
+
+  const handleOpen = () => setOpen(!open);
+  const handleError = () => setError(!error);
 
   const changeOnClick = (e) => {
     e.preventDefault();
@@ -56,8 +79,14 @@ export default function SignupSection() {
 
     axios
       .post("http://localhost:4000/user/signup", formData)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        console.log(res);
+        handleOpen();
+      })
+      .catch((err) => {
+        console.log(err);
+        handleError();
+      });
 
     console.log(formData);
   };
@@ -70,7 +99,7 @@ export default function SignupSection() {
             class="hidden bg-cover lg:block lg:w-2/5"
             style={{
               backgroundImage:
-                "url('https://images.unsplash.com/photo-1494621930069-4fd4b2e24a11?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=715&q=80')",
+                "url('https://images.unsplash.com/photo-1535957998253-26ae1ef29506?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTh8fGJ1cmVhdXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60')",
             }}
           ></div>
 
@@ -109,25 +138,26 @@ export default function SignupSection() {
 
                     <span class="mx-2">administrateur</span>
                   </button>
+                  <Link to="/signup/user">
+                    <button class="flex justify-center w-full px-6 py-3 mt-4 text-blue-500 border border-blue-500 rounded-lg md:mt-0 md:w-auto md:mx-2 dark:border-blue-400 dark:text-blue-400 focus:outline-none">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
 
-                  <button class="flex justify-center w-full px-6 py-3 mt-4 text-blue-500 border border-blue-500 rounded-lg md:mt-0 md:w-auto md:mx-2 dark:border-blue-400 dark:text-blue-400 focus:outline-none">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-6 h-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-
-                    <span class="mx-2">client</span>
-                  </button>
+                      <span class="mx-2">client</span>
+                    </button>
+                  </Link>
                 </div>
               </div>
               {/* Formulaire Start */}
@@ -295,33 +325,59 @@ export default function SignupSection() {
                         </div>
                       )}
                     </div>
-                    <div>
+                    <div className="mt-8 flex flex-col xl:w-3/5 lg:w-1/2 md:w-1/2 w-full">
                       <label
-                        class="block mb-2 text-sm text-gray-600 dark:text-gray-200"
                         htmlFor="imgUrl"
+                        className=" text-sm font-bold text-gray-800"
                       >
-                        img
+                        Photo de profile
                       </label>
-                      <input
-                        type="file"
-                        filename="imgUrl"
-                        onChange={onChangeFile}
-                        required
-                        class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
-                      />
-                      {touched.imgUrl && errors.imgUrl && (
-                        <div className="w-full border flex  py-1 bg-red-200 text-gray-600 border-red-500 px-6 mt-1 rounded-lg text-sm">
-                          {errors.imgUrl}
-                        </div>
-                      )}
                     </div>
+                    <div className="col-span-full">
+                      <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                        <div className="text-center">
+                          <PhotoIcon
+                            className="mx-auto h-12 w-12 text-gray-300"
+                            aria-hidden="true"
+                          />
+                          <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                            <label
+                              htmlFor="imgUrl"
+                              className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                            >
+                              <span>Upload a file</span>
+                              <input
+                                id="imgUrl"
+                                name="imgUrl"
+                                type="file"
+                                onChange={handleFileChange}
+                                className="sr-only"
+                              />
+                            </label>
+                            <p className="pl-1">or drag and drop</p>
+                          </div>
+                          <p className="text-xs leading-5 text-gray-600">
+                            PNG, JPG, GIF up to 10MB
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {profile && (
+                      <img src={profile} alt="" className="rounded-lg h-64" />
+                    )}
+                    {touched.imgUrl && errors.imgUrl && (
+                      <div className="w-full border flex  py-1 bg-red-200 text-gray-600 border-red-500 px-6 mt-1 rounded-lg text-sm">
+                        {errors.imgUrl}
+                      </div>
+                    )}
+                    <br />
 
                     <button
                       class="flex items-center justify-between w-full px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
                       type="submit"
                       disabled={isSubmitting}
                     >
-                      <span>Sign Up </span>
+                      <span>S'enregistrer </span>
 
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -343,6 +399,41 @@ export default function SignupSection() {
             </div>
           </div>
         </div>
+        {/* commande confirmée */}
+        <Dialog open={open} handler={handleOpen}>
+          <DialogHeader>Votre Compte a bien été crée avec succès</DialogHeader>
+          <DialogBody divider className="text-semibold">
+            Nous vous prions de cliquer sur le bouton-ci dessous afin que vous
+            puissez vous connecter
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              variant="gradient"
+              color="green"
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              <span>se connecter</span>
+            </Button>
+          </DialogFooter>
+        </Dialog>
+        {/* commande refusée*/}
+        <Dialog open={error} handler={handleError}>
+          <DialogHeader>
+            Veuillez remplir tous les champs pour créer un compte
+          </DialogHeader>
+          <DialogBody divider className="text-bold">
+            Notez bien : vous ne pouvez pas utilisé le même nom d'utilisateur ,
+            la même addresse mail ou le même numéro de telephone pour deux
+            comptes
+          </DialogBody>
+          <DialogFooter>
+            <Button variant="gradient" color="red" onClick={handleError}>
+              <span>Fermer</span>
+            </Button>
+          </DialogFooter>
+        </Dialog>
       </section>
     </>
   );
